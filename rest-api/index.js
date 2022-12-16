@@ -1271,8 +1271,8 @@ app.put('/todos/:todoId', express.json(), (req, res) => {
     const { userId, completed, title } = req.body;
 
     if (
-        typeof userId === 'undefined' &&
-        typeof completed === 'undefined' &&
+        typeof userId === 'undefined' ||
+        typeof completed === 'undefined' ||
         typeof title === 'undefined'
     ) {
         res.sendStatus(400);
@@ -1285,8 +1285,8 @@ app.put('/todos/:todoId', express.json(), (req, res) => {
     todos = todos.map((todo) => {
         if (todo.id === todoId) {
             updatedTodo = {
-                userId,
                 id: todoId,
+                userId,
                 title,
                 completed,
             };
@@ -1312,7 +1312,11 @@ app.patch('/todos/:todoId', express.json(), (req, res) => {
 
     todos = todos.map((todo) => {
         if (todo.id === todoId) {
-            if (!title && !userId && !completed) {
+            if (
+                typeof userId === 'undefined' &&
+                typeof completed === 'undefined' &&
+                typeof title === 'undefined'
+            ) {
                 patchedTodo = todo;
                 return todo;
             }
@@ -1322,6 +1326,7 @@ app.patch('/todos/:todoId', express.json(), (req, res) => {
                 userId: currentUserId,
                 completed: currentCompleted,
             } = todo;
+
             patchedTodo = {
                 ...todo,
                 title: title || currentTitle,

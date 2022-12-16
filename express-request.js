@@ -28,7 +28,7 @@ app.post('/api', express.urlencoded({ extended: true }), (req, res) => {
 
 app.post('/json', express.json(), (req, res) => {
     const { body } = req;
-    const { name, surname } = body || {};
+    const { name, surname } = body;
 
     if (!name || !surname) {
         res.sendStatus(400);
