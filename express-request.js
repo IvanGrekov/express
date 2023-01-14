@@ -6,17 +6,14 @@ console.clear();
 export const PORT = 3000;
 const app = express();
 
-app.use(express.static(path.resolve('public')));
-
-// NOTE: apply middleware for all requests
-// app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public'));
 
 app.post('/api', express.urlencoded({ extended: true }), (req, res) => {
-    const { body } = req;
-    const { email, password } = body || {};
+    const { email, password } = req.body;
 
     if (!email || !password) {
         res.sendStatus(401);
+
         return;
     }
 
@@ -27,15 +24,16 @@ app.post('/api', express.urlencoded({ extended: true }), (req, res) => {
 });
 
 app.post('/json', express.json(), (req, res) => {
-    const { body } = req;
-    const { name, surname } = body;
+    const { name, surname } = req.body;
+    console.log(name, surname);
 
     if (!name || !surname) {
-        res.sendStatus(400);
+        res.send({ error: 'provide name & surname' });
+
         return;
     }
 
-    res.send(`Hello, ${name} ${surname}`);
+    res.send({ name, surname });
 });
 
 app.listen(PORT, () => {
