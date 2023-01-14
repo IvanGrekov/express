@@ -59,14 +59,14 @@ const server = express();
 // server.use('/', (req, res, next) => {
 //     res.write('<h1>Home page!</h1>');
 
-//     // NOTE: if there is no matching below, we won't end the response
-//     // NOTE: if there is a matching below, we will get error because we already made 'end'
-//     // NOTE: if there is a matching below and to prevent the error we should use 'write' instead of 'end' above
+// NOTE: if there is no matching below, we won't end the response
+// NOTE: if there is a matching below, we will get error because we already made 'end'
+// NOTE: if there is a matching below and to prevent the error we should use 'write' instead of 'end' above
 //     next();
 // });
 
 // server.use('/team', (req, res) => {
-//     // NOTE: if it will end the response if the request has '/team...' address
+// NOTE: if it will end the response if the request has '/team...' address
 //     res.end('<h1>About page!</h1>');
 // });
 //#endregion
