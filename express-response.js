@@ -57,6 +57,19 @@ const app = express();
 // });
 //#endregion
 
+// app.use('/', (req, res) => {
+// res.send('Hello, world');
+// res.send({ name: 'Ivan' });
+// res.sendStatus(404);
+// res.sendFile(path.resolve('public', 'panda.mp4'));
+// });
+
+// app.use(express.static('public'));
+
+// app.use('/', (req, res) => {
+//     res.sendStatus(404);
+// });
+
 app.listen(PORT, () => {
     console.log(`Server is running, http://localhost:${PORT}`);
 });
