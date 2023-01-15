@@ -2,27 +2,27 @@ let todos = [
     {
         id: 1,
         title: 'HTML',
-        completed: false,
+        isCompleted: false,
     },
     {
         id: 2,
         title: 'CSS',
-        completed: true,
+        isCompleted: true,
     },
     {
         id: 3,
         title: 'JS',
-        completed: false,
+        isCompleted: false,
     },
     {
         id: 4,
         title: 'REACT',
-        completed: true,
+        isCompleted: true,
     },
     {
         id: 5,
         title: 'NODE',
-        completed: false,
+        isCompleted: false,
     },
 ];
 

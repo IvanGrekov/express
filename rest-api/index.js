@@ -3,11 +3,33 @@ dotenv.config();
 console.clear();
 
 import express from 'express';
+import cors from 'cors';
 import todosModel from './todos-model.js';
 import { TODOS_APP_ENDPOINTS } from './constants.js';
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 const app = express();
+
+// NOTE: middleware to don't set headers 'Access-Control-...' each time
+app.use(
+    cors({
+        // NOTE: not required
+        origin: 'http://localhost:3000',
+    }),
+);
+
+// NOTE: for preflight requests before such methods as DELETE
+// NOTE: don't need with middleware cors
+// app.options('/todos', (req, res) => {
+// NOTE: to prevent CORS
+// res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+// NOTE: to prevent sending json (for post)
+// res.setHeader('Access-Control-Allow-Headers', 'Content-Type,X-Token');
+// NOTE: to allow other methods
+// res.setHeader('Access-Control-Allow-Methods', 'DELETE');
+
+// res.end();
+// });
 
 // NOTE: home address
 app.get('/', (_, res) => {
@@ -17,7 +39,18 @@ app.get('/', (_, res) => {
 });
 
 // NOTE: get all todos
-app.get(TODOS_APP_ENDPOINTS.todos, (_, res) => {
+app.get(TODOS_APP_ENDPOINTS.todos, (req, res) => {
+    // NOTE: to take a look from where request is
+    // console.log(req.headers.origin);
+
+    // NOTE: don't need with middleware cors
+    // NOTE: to prevent CORS
+    // res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    // NOTE: to prevent sending json (for post)
+    // res.setHeader('Access-Control-Allow-Headers', 'Content-Type,X-Token');
+    // NOTE: to allow other methods
+    // res.setHeader('Access-Control-Allow-Methods', 'DELETE');
+
     res.send(todosModel.getTodos());
 });
 
