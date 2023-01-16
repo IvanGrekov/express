@@ -1,3 +1,5 @@
+import { generateId } from './utils.js';
+
 let todos = [
     {
         id: 1,
@@ -34,9 +36,21 @@ export default {
         const todo = todos.find((todo) => todo.id === +id);
 
         if (!todo) {
-            return { error: { message: `There is no todo with id:${id}` } };
+            return null;
         }
 
         return todo;
+    },
+    createTodo: ({ title, date, isCompleted = false }) => {
+        const newTodo = {
+            id: generateId(),
+            title,
+            date,
+            isCompleted,
+        };
+
+        todos.push(newTodo);
+
+        return newTodo;
     },
 };

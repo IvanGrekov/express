@@ -6,6 +6,7 @@ import express from 'express';
 import cors from 'cors';
 import todosModel from './todos-model.js';
 import { TODOS_APP_ENDPOINTS } from './constants.js';
+import { getError } from './utils.js';
 
 const PORT = process.env.PORT;
 const app = express();
@@ -59,32 +60,36 @@ app.get(TODOS_APP_ENDPOINTS.todoId, (req, res) => {
     const { todoId } = req.params;
     const resultFromModel = todosModel.getSignleTodo(todoId);
 
-    if (resultFromModel.error) {
+    if (!resultFromModel) {
+        // NOTE: Not found
         res.statusCode = 404;
+        res.send(getError(`There is no todo with id:${id}`));
+    } else {
+        res.send(resultFromModel);
     }
-
-    res.send(resultFromModel);
 });
 
-// app.post('/todos', express.json(), (req, res) => {
-//     const { title, date, completed = false } = req.body;
+app.post(TODOS_APP_ENDPOINTS.todos, express.json(), (req, res) => {
+    const { title, date } = req.body;
 
-//     if (!title) {
-//         res.sendStatus(400);
+    if (!title || !date) {
+        const errorMessage = !!title ? 'Date' : 'Title' + " wasn't provided";
 
-//         return;
-//     }
+        // NOTE: Bad request
+        // res.statusCode = 400;
+        // NOTE: Syntax is correct, but server can't proceed with provided data
+        res.statusCode = 422;
+        res.send(getError(errorMessage));
 
-//     const newTodo = {
-//         id: +`${Math.random() * Math.random()}`.replace(/[0.]/g, ''),
-//         title,
-//         date,
-//         completed,
-//     };
+        return;
+    }
 
-//     todos.push(newTodo);
-//     res.send(newTodo);
-// });
+    const resultFromModel = todosModel.createTodo(req.body);
+
+    // NOTE: Created
+    res.statusCode = 201;
+    res.send(resultFromModel);
+});
 
 // app.delete('/todos/:todoId', (req, res) => {
 //     const todoId = +req.params.todoId;
