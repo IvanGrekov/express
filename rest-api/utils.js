@@ -1,4 +1,4 @@
-export const getError = (message) => ({
+export const getServerError = (message) => ({
     error: { message },
 });
 

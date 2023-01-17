@@ -6,7 +6,7 @@ import express from 'express';
 import cors from 'cors';
 import todosModel from './todos-model.js';
 import { TODOS_APP_ENDPOINTS } from './constants.js';
-import { getError } from './utils.js';
+import { getServerError } from './utils.js';
 
 const PORT = process.env.PORT;
 const app = express();
@@ -63,7 +63,7 @@ app.get(TODOS_APP_ENDPOINTS.todoId, (req, res) => {
     if (!resultFromModel) {
         // NOTE: Not found
         res.statusCode = 404;
-        res.send(getError(`There is no todo with id:${id}`));
+        res.send(getServerError(`There is no todo with id:${id}`));
     } else {
         res.send(resultFromModel);
     }
@@ -79,7 +79,7 @@ app.post(TODOS_APP_ENDPOINTS.todos, express.json(), (req, res) => {
         // res.statusCode = 400;
         // NOTE: Syntax is correct, but server can't proceed with provided data
         res.statusCode = 422;
-        res.send(getError(errorMessage));
+        res.send(getServerError(errorMessage));
 
         return;
     }
