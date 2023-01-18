@@ -22,14 +22,14 @@ app.use(
 // NOTE: for preflight requests before such methods as DELETE
 // NOTE: don't need with middleware cors
 // app.options('/todos', (req, res) => {
-// NOTE: to prevent CORS
-// res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
-// NOTE: to prevent sending json (for post)
-// res.setHeader('Access-Control-Allow-Headers', 'Content-Type,X-Token');
-// NOTE: to allow other methods
-// res.setHeader('Access-Control-Allow-Methods', 'DELETE');
+//     // NOTE: to prevent CORS
+//     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+//     // NOTE: to prevent sending json (for post)
+//     res.setHeader('Access-Control-Allow-Headers', 'Content-Type,X-Token');
+//     // NOTE: to allow other methods
+//     res.setHeader('Access-Control-Allow-Methods', 'DELETE');
 
-// res.end();
+//     res.end();
 // });
 
 // NOTE: home address
@@ -63,7 +63,7 @@ app.get(TODOS_APP_ENDPOINTS.todoId, (req, res) => {
     if (!resultFromModel) {
         // NOTE: Not found
         res.statusCode = 404;
-        res.send(getServerError(`There is no todo with id:${id}`));
+        res.send(getServerError(`There is no todo with id:${todoId}`));
     } else {
         res.send(resultFromModel);
     }
@@ -89,6 +89,21 @@ app.post(TODOS_APP_ENDPOINTS.todos, express.json(), (req, res) => {
     // NOTE: Created
     res.statusCode = 201;
     res.send(resultFromModel);
+});
+
+app.delete(TODOS_APP_ENDPOINTS.todoId, (req, res) => {
+    const { todoId } = req.params;
+    const resultFromModel = todosModel.deleteTodo(todoId);
+
+    if (!resultFromModel) {
+        // NOTE: Not found
+        res.statusCode = 404;
+        res.send(getServerError(`There is no todo with id:${todoId}`));
+    } else {
+        // NOTE: Accepted
+        res.statusCode = 202;
+        res.send(resultFromModel);
+    }
 });
 
 // app.delete('/todos/:todoId', (req, res) => {

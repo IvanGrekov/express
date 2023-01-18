@@ -53,4 +53,15 @@ export default {
 
         return newTodo;
     },
+    deleteTodo: (id) => {
+        const deletingTodoIndex = todos.findIndex((todo) => todo.id === +id);
+
+        if (deletingTodoIndex === -1) {
+            return null;
+        }
+
+        const [deletingTodo] = todos.splice(deletingTodoIndex, 1);
+
+        return deletingTodo;
+    },
 };
