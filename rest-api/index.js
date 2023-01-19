@@ -98,27 +98,27 @@ app.delete(TODOS_APP_ENDPOINTS.todoId, (req, res) => {
 });
 
 app.put(TODOS_APP_ENDPOINTS.todoId, express.json(), (req, res) => {
-    const { todo } = req.body;
+    const { todoId } = req.params;
 
-    if (!todo) {
+    if (!req.body.todo) {
         // NOTE: Bad request
         res.statusCode = 400;
-        res.send(getServerError('Please sent a todo to put it'));
+        res.send(getServerError('Please send todo data in format `{ todo: {...} }` to put todo'));
 
         return;
     }
 
-    const puttingTodo = todosModel.getSignleTodo(id);
+    const puttingTodo = todosModel.getSignleTodo(todoId);
 
     if (!puttingTodo) {
         // NOTE: Not found
         res.statusCode = 404;
-        res.send(getServerError(`There is no todo with id:${todo.todoId}`));
+        res.send(getServerError(`There is no todo with id:${todoId}`));
 
         return;
     }
 
-    const resultFromModel = todosModel.putTodo(req.body.todo);
+    const resultFromModel = todosModel.putTodo({ id: todoId, ...req.body.todo });
 
     if (!resultFromModel) {
         // NOTE: Bad Request
@@ -132,7 +132,16 @@ app.put(TODOS_APP_ENDPOINTS.todoId, express.json(), (req, res) => {
 
 app.patch(TODOS_APP_ENDPOINTS.todoId, express.json(), (req, res) => {
     const { todoId } = req.params;
-    const patchingTodo = todosModel.getSignleTodo(id);
+
+    if (!req.body.todo) {
+        // NOTE: Bad request
+        res.statusCode = 400;
+        res.send(getServerError('Please send todo data in format `{ todo: {...} }` to patch todo'));
+
+        return;
+    }
+
+    const patchingTodo = todosModel.getSignleTodo(todoId);
 
     if (!patchingTodo) {
         // NOTE: Not found
@@ -142,7 +151,7 @@ app.patch(TODOS_APP_ENDPOINTS.todoId, express.json(), (req, res) => {
         return;
     }
 
-    const resultFromModel = todosModel.patchTodo({ id, ...req.body });
+    const resultFromModel = todosModel.patchTodo({ id: todoId, ...req.body.todo });
 
     if (!resultFromModel) {
         // NOTE: Bad Request

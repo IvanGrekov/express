@@ -100,7 +100,7 @@ export default {
             date,
         };
 
-        return updatingTodo;
+        return todos[updatingTodoIndex];
     },
     patchTodo: ({ id, title, date, isCompleted }) => {
         const patchingTodoIndex = todos.findIndex((todo) => todo.id === id);
@@ -116,13 +116,10 @@ export default {
         } = todos[patchingTodoIndex];
         const truthTitle = title || currentTitle;
         const truthDate = date || currentDate;
-        const truthIsCompleted = isCompleted || currentIsCompleted;
+        const truthIsCompleted =
+            typeof isCompleted === 'boolean' ? isCompleted : currentIsCompleted;
 
-        if (
-            typeof truthTitle !== 'string' ||
-            typeof truthDate !== 'string' ||
-            typeof truthIsCompleted !== 'boolean'
-        ) {
+        if (typeof truthTitle !== 'string' || typeof truthDate !== 'string') {
             return null;
         }
 
