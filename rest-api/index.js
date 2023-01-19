@@ -51,7 +51,6 @@ app.get(TODOS_APP_ENDPOINTS.todos, (req, res) => {
     // res.setHeader('Access-Control-Allow-Headers', 'Content-Type,X-Token');
     // NOTE: to allow other methods
     // res.setHeader('Access-Control-Allow-Methods', 'DELETE');
-
     res.send(todosModel.getTodos());
 });
 
@@ -70,25 +69,17 @@ app.get(TODOS_APP_ENDPOINTS.todoId, (req, res) => {
 });
 
 app.post(TODOS_APP_ENDPOINTS.todos, express.json(), (req, res) => {
-    const { title, date } = req.body;
-
-    if (!title || !date) {
-        const errorMessage = !!title ? 'Date' : 'Title' + " wasn't provided";
-
-        // NOTE: Bad request
-        // res.statusCode = 400;
-        // NOTE: Syntax is correct, but server can't proceed with provided data
-        res.statusCode = 422;
-        res.send(getServerError(errorMessage));
-
-        return;
-    }
-
     const resultFromModel = todosModel.createTodo(req.body);
 
-    // NOTE: Created
-    res.statusCode = 201;
-    res.send(resultFromModel);
+    if (!resultFromModel) {
+        // NOTE: Bad request
+        res.statusCode = 422;
+        res.send(getServerError('Incorrect types of provided fields'));
+    } else {
+        // NOTE: Created
+        res.statusCode = 201;
+        res.send(resultFromModel);
+    }
 });
 
 app.delete(TODOS_APP_ENDPOINTS.todoId, (req, res) => {
@@ -106,107 +97,62 @@ app.delete(TODOS_APP_ENDPOINTS.todoId, (req, res) => {
     }
 });
 
-// app.delete('/todos/:todoId', (req, res) => {
-//     const todoId = +req.params.todoId;
-//     let removedTodo;
+app.put(TODOS_APP_ENDPOINTS.todoId, express.json(), (req, res) => {
+    const { todo } = req.body;
 
-//     todos = todos.filter((todo) => {
-//         if (todo.id === todoId) {
-//             removedTodo = todo;
+    if (!todo) {
+        // NOTE: Bad request
+        res.statusCode = 400;
+        res.send(getServerError('Please sent a todo to put it'));
 
-//             return false;
-//         }
+        return;
+    }
 
-//         return true;
-//     });
+    const puttingTodo = todosModel.getSignleTodo(id);
 
-//     if (!removedTodo) {
-//         res.sendStatus(404);
-//     } else {
-//         res.send(removedTodo);
-//     }
-// });
+    if (!puttingTodo) {
+        // NOTE: Not found
+        res.statusCode = 404;
+        res.send(getServerError(`There is no todo with id:${todo.todoId}`));
 
-// app.put('/todos/:todoId', express.json(), (req, res) => {
-//     const todoId = +req.params.todoId;
-//     const { date, completed, title } = req.body;
+        return;
+    }
 
-//     if (
-//         typeof date === 'undefined' ||
-//         typeof completed === 'undefined' ||
-//         typeof title === 'undefined'
-//     ) {
-//         res.sendStatus(400);
+    const resultFromModel = todosModel.putTodo(req.body.todo);
 
-//         return;
-//     }
+    if (!resultFromModel) {
+        // NOTE: Bad Request
+        res.statusCode = 422;
+        res.send(getServerError('Incorrect types of provided fields'));
+    } else {
+        res.statusCode = 200;
+        res.send(resultFromModel);
+    }
+});
 
-//     let updatedTodo;
+app.patch(TODOS_APP_ENDPOINTS.todoId, express.json(), (req, res) => {
+    const { todoId } = req.params;
+    const patchingTodo = todosModel.getSignleTodo(id);
 
-//     todos = todos.map((todo) => {
-//         if (todo.id === todoId) {
-//             updatedTodo = {
-//                 id: todoId,
-//                 userId,
-//                 title,
-//                 completed,
-//             };
+    if (!patchingTodo) {
+        // NOTE: Not found
+        res.statusCode = 404;
+        res.send(getServerError(`There is no todo with id:${todoId}`));
 
-//             return updatedTodo;
-//         }
+        return;
+    }
 
-//         return todo;
-//     });
+    const resultFromModel = todosModel.patchTodo({ id, ...req.body });
 
-//     if (!updatedTodo) {
-//         res.sendStatus(404);
-//     } else {
-//         res.send(updatedTodo);
-//     }
-// });
-
-// app.patch('/todos/:todoId', express.json(), (req, res) => {
-//     const todoId = +req.params.todoId;
-//     const { title, date, completed } = req.body;
-
-//     let patchedTodo;
-
-//     todos = todos.map((todo) => {
-//         if (todo.id === todoId) {
-//             if (
-//                 typeof date === 'undefined' &&
-//                 typeof completed === 'undefined' &&
-//                 typeof title === 'undefined'
-//             ) {
-//                 patchedTodo = todo;
-//                 return todo;
-//             }
-
-//             const {
-//                 title: currentTitle,
-//                 userId: currentUserId,
-//                 completed: currentCompleted,
-//             } = todo;
-
-//             patchedTodo = {
-//                 ...todo,
-//                 title: title || currentTitle,
-//                 userId: userId || currentUserId,
-//                 completed: completed || currentCompleted,
-//             };
-
-//             return patchedTodo;
-//         }
-
-//         return todo;
-//     });
-
-//     if (!patchedTodo) {
-//         res.sendStatus(404);
-//     } else {
-//         res.send(patchedTodo);
-//     }
-// });
+    if (!resultFromModel) {
+        // NOTE: Bad Request
+        res.statusCode = 422;
+        res.send(getServerError('Incorrect types of provided fields'));
+    } else {
+        res.statusCode = 200;
+        res.send(resultFromModel);
+    }
+});
 
 app.listen(PORT, () => {
     console.log(`Server is running, http://localhost:${PORT}`);
