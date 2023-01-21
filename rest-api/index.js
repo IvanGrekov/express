@@ -68,6 +68,7 @@ app.get(TODOS_APP_ENDPOINTS.todoId, (req, res) => {
     }
 });
 
+// NOTE: create todo
 app.post(TODOS_APP_ENDPOINTS.todos, express.json(), (req, res) => {
     const resultFromModel = todosModel.createTodo(req.body);
 
@@ -82,6 +83,7 @@ app.post(TODOS_APP_ENDPOINTS.todos, express.json(), (req, res) => {
     }
 });
 
+// NOTE: delete todo
 app.delete(TODOS_APP_ENDPOINTS.todoId, (req, res) => {
     const { todoId } = req.params;
     const resultFromModel = todosModel.deleteTodo(todoId);
@@ -92,11 +94,15 @@ app.delete(TODOS_APP_ENDPOINTS.todoId, (req, res) => {
         res.send(getServerError(`There is no todo with id:${todoId}`));
     } else {
         // NOTE: Accepted
-        res.statusCode = 202;
+        // res.statusCode = 202;
+        // NOTE: Succeeded
+        // res.statusCode = 204;
+        res.statusCode = 200;
         res.send(resultFromModel);
     }
 });
 
+// NOTE: update todo
 app.put(TODOS_APP_ENDPOINTS.todoId, express.json(), (req, res) => {
     const { todoId } = req.params;
 
@@ -130,6 +136,7 @@ app.put(TODOS_APP_ENDPOINTS.todoId, express.json(), (req, res) => {
     }
 });
 
+// NOTE: modify todo
 app.patch(TODOS_APP_ENDPOINTS.todoId, express.json(), (req, res) => {
     const { todoId } = req.params;
 
@@ -161,6 +168,106 @@ app.patch(TODOS_APP_ENDPOINTS.todoId, express.json(), (req, res) => {
         res.statusCode = 200;
         res.send(resultFromModel);
     }
+});
+
+// NOTE: modify todos
+app.patch(TODOS_APP_ENDPOINTS.todos, express.json(), (req, res) => {
+    if (!req.body.todos) {
+        // NOTE: Bad request
+        res.statusCode = 400;
+        res.send(
+            getServerError(
+                'Please send todos in format `{ todos: ITodo[] }` to modify several todos, or add todoId param to your url to modify single todo',
+            ),
+        );
+
+        return;
+    }
+
+    if (Array.isArray(req.body.todos) && !req.body.todos.length) {
+        // NOTE: Bad request
+        res.statusCode = 400;
+        res.send(getServerError('Please send a not empty array of todos to modify several todos'));
+
+        return;
+    }
+
+    for (const todo of req.body.todos) {
+        if (!todo?.id) {
+            continue;
+        }
+
+        const { id } = todo;
+        todosModel.patchTodo({ id, ...todo });
+    }
+
+    res.statusCode = 200;
+    res.send(todosModel.getTodos());
+});
+
+// NOTE: update todos data
+app.put(TODOS_APP_ENDPOINTS.todos, express.json(), (req, res) => {
+    if (!req.body.todos) {
+        // NOTE: Bad request
+        res.statusCode = 400;
+        res.send(
+            getServerError(
+                'Please send todos in format `{ todos: ITodo[] }` to update todos data, or add todoId param to your url to update a single todo',
+            ),
+        );
+
+        return;
+    }
+
+    if (Array.isArray(req.body.todos) && !req.body.todos.length) {
+        // NOTE: Bad request
+        res.statusCode = 400;
+        res.send(getServerError('Please send a not empty array of todos to update todos data'));
+
+        return;
+    }
+
+    const resultFromModel = todosModel.replaceTodos(req.body.todos);
+
+    if (!resultFromModel) {
+        // NOTE: Bad request
+        res.statusCode = 400;
+        res.send(
+            getServerError('Please provide the array with todos corresponded to todo interface'),
+        );
+    } else {
+        res.statusCode = 200;
+        res.send(resultFromModel);
+    }
+});
+
+// NOTE: remove todos
+app.delete(TODOS_APP_ENDPOINTS.todos, express.json(), (req, res) => {
+    if (!req.body.todoIds) {
+        // NOTE: Bad request
+        res.statusCode = 400;
+        res.send(getServerError('Please send todoIds for removing in format `{ todoIds: id[] }`'));
+
+        return;
+    }
+
+    if (Array.isArray(req.body.todoIds) && !req.body.todoIds.length) {
+        // NOTE: Bad request
+        res.statusCode = 400;
+        res.send(
+            getServerError('Please send a not empty array of todoIds to remove several todos'),
+        );
+
+        return;
+    }
+
+    for (const id of req.body.todoIds) {
+        todosModel.deleteTodo(id);
+    }
+
+    // NOTE: Succeeded
+    res.statusCode = 200;
+    res.send(todosModel.getTodos());
 });
 
 app.listen(PORT, () => {

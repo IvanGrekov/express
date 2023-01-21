@@ -132,4 +132,32 @@ export default {
 
         return todos[patchingTodoIndex];
     },
+    replaceTodos: (newTodos) => {
+        const formattedNewTodos = [];
+
+        newTodos.forEach(({ id, title, date = '', isCompleted = false }) => {
+            if (
+                typeof id !== 'string' ||
+                typeof title !== 'string' ||
+                typeof date !== 'string' ||
+                typeof isCompleted !== 'boolean'
+            ) {
+                return;
+            }
+
+            formattedNewTodos.push({
+                id,
+                title,
+                date,
+                isCompleted,
+            });
+        });
+
+        if (!!newTodos.length && !formattedNewTodos.length) {
+            return null;
+        } else {
+            todos = formattedNewTodos;
+            return todos;
+        }
+    },
 };
