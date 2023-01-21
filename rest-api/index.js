@@ -270,6 +270,10 @@ app.delete(TODOS_APP_ENDPOINTS.todos, express.json(), (req, res) => {
     res.send(todosModel.getTodos());
 });
 
+app.get('/check', (req, res) => {
+    res.send(req.query.check);
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running, http://localhost:${PORT}`);
 });
