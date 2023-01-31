@@ -15,7 +15,7 @@ const app = express();
 app.use(
     cors({
         // NOTE: not required
-        origin: 'http://localhost:3000',
+        origin: 'http://localhost:4000',
     }),
 );
 
