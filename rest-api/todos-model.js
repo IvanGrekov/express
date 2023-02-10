@@ -5,31 +5,31 @@ let todos = [
         id: '1',
         title: 'HTML',
         isCompleted: false,
-        date: '06-02-2023',
+        date: new Date('2023-02-11'),
     },
     {
         id: '2',
         title: 'CSS',
         isCompleted: true,
-        date: '04-02-2023',
+        date: new Date('2023-02-09'),
     },
     {
         id: '3',
         title: 'JS',
         isCompleted: false,
-        date: '03-03-2023',
+        date: new Date('2023-03-03'),
     },
     {
         id: '4',
         title: 'REACT',
         isCompleted: true,
-        date: '08-09-2023',
+        date: new Date('2023-09-08'),
     },
     {
         id: '5',
         title: 'NODE',
         isCompleted: false,
-        date: '24-02-2023',
+        date: new Date('2023-02-10'),
     },
 ];
 
